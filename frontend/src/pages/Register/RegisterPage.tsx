@@ -1,10 +1,67 @@
+import api from "../../services/api";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [fullName, setFullName] = useState("");
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [confirmPassword, setConfirmPassword] = useState("");
 
+const [loading, setLoading] = useState(false);
+const [success, setSuccess] = useState("");
+const [error, setError] = useState("");
+const handleRegister = async (e: any) => {
+  e.preventDefault();
+
+  setSuccess("");
+  setError("");
+
+  if (!fullName.trim()) {
+    setError("Please enter your full name.");
+    return;
+  }
+
+  if (!email.trim()) {
+    setError("Please enter your email.");
+    return;
+  }
+
+  if (!password.trim()) {
+    setError("Please enter your password.");
+    return;
+  }
+
+  if (!confirmPassword.trim()) {
+    setError("Please confirm your password.");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const response = await api.post("/auth/register", {
+      full_name: fullName,
+      email,
+      password,
+      confirm_password: confirmPassword,
+    });
+
+    console.log(response.data);
+    setSuccess("Account created successfully!");
+
+  } catch (err: any) {
+    if (err.response?.data?.detail) {
+      setError(err.response.data.detail);
+    } else {
+      setError("Unable to connect to server.");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-6">
 
@@ -26,7 +83,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Form */}
-        <form className="mt-8 space-y-5">
+        <form onSubmit={handleRegister} className="mt-8 space-y-5">
 
           {/* Full Name */}
           <div>
@@ -34,11 +91,13 @@ export default function RegisterPage() {
               Full Name
             </label>
 
-            <input
-              type="text"
-              placeholder="Enter your full name"
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-            />
+           <input
+  type="text"
+  placeholder="Enter your full name"
+  value={fullName}
+  onChange={(e) => setFullName(e.target.value)}
+  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+/>
           </div>
 
           {/* Email */}
@@ -48,10 +107,12 @@ export default function RegisterPage() {
             </label>
 
             <input
-              type="email"
-              placeholder="Enter your email"
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-            />
+  type="email"
+  placeholder="Enter your email"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+/>
           </div>
 
           {/* Password */}
@@ -61,11 +122,13 @@ export default function RegisterPage() {
             </label>
 
             <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Create a password"
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 pr-12 text-white outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-              />
+             <input
+  type={showPassword ? "text" : "password"}
+  placeholder="Create a password"
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 pr-12 text-white outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+/>
 
               <button
                 type="button"
@@ -85,10 +148,12 @@ export default function RegisterPage() {
 
             <div className="relative">
               <input
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm your password"
-                className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 pr-12 text-white outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-              />
+  type={showConfirmPassword ? "text" : "password"}
+  placeholder="Confirm your password"
+  value={confirmPassword}
+  onChange={(e) => setConfirmPassword(e.target.value)}
+  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 pr-12 text-white outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+/>
 
               <button
                 type="button"
@@ -101,15 +166,26 @@ export default function RegisterPage() {
               </button>
             </div>
           </div>
+          {success && (
+  <div className="rounded-lg border border-green-500 bg-green-500/20 px-4 py-3 text-green-300">
+    {success}
+  </div>
+)}
+
+{error && (
+  <div className="rounded-lg border border-red-500 bg-red-500/20 px-4 py-3 text-red-300">
+    {error}
+  </div>
+)}
 
           {/* Register Button */}
           <button
-            type="submit"
-            className="w-full rounded-xl bg-blue-600 py-3 font-semibold transition-all duration-200 hover:scale-[1.02] hover:bg-blue-700 active:scale-95"
-          >
-            Create Account
-          </button>
-
+  type="submit"
+  disabled={loading}
+  className="w-full rounded-xl bg-blue-600 py-3 font-semibold transition-all duration-200 hover:scale-[1.02] hover:bg-blue-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+>
+  {loading ? "Creating Account..." : "Create Account"}
+</button>
         </form>
 
         {/* Footer */}
