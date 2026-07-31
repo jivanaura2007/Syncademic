@@ -1,8 +1,25 @@
+import api from "../../services/api";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const handleLogin = async (e: any) => {
+  e.preventDefault();
+
+  try {
+    const response = await api.post("/auth/login", {
+      email,
+      password,
+    });
+
+    console.log("Success:", response.data);
+  } catch (error) {
+    console.error(error);
+  }
+};
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-6">
 
@@ -24,7 +41,7 @@ export default function LoginPage() {
         </div>
 
         {/* Form */}
-        <form className="mt-8 space-y-6">
+       <form onSubmit={handleLogin} className="mt-8 space-y-6">
 
           {/* Email */}
           <div>
@@ -33,10 +50,12 @@ export default function LoginPage() {
             </label>
 
             <input
-              type="email"
-              placeholder="Enter your email"
-              className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-            />
+  type="email"
+  placeholder="Enter your email"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+/>
           </div>
 
          {/* Password */}
@@ -47,10 +66,12 @@ export default function LoginPage() {
 
   <div className="relative">
     <input
-      type={showPassword ? "text" : "password"}
-      placeholder="Enter your password"
-      className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
-    />
+  type={showPassword ? "text" : "password"}
+  placeholder="Enter your password"
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
+  className="w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-white outline-none transition-all duration-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20"
+/>
 
     <button
       type="button"
