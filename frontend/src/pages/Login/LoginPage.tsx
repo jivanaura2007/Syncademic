@@ -6,19 +6,47 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const handleLogin = async (e: any) => {
-  e.preventDefault();
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState("");
+    const [error, setError] = useState("");
+   const handleLogin = async (e: any) => {
+    e.preventDefault();
 
-  try {
-    const response = await api.post("/auth/login", {
-      email,
-      password,
-    });
+    setSuccess("");
+    setError("");
 
-    console.log("Success:", response.data);
-  } catch (error) {
-    console.error(error);
-  }
+   if (!email.trim()) {
+    console.log("Email validation triggered");
+    setError("Please enter your email.");
+    return;
+}
+
+if (!password.trim()) {
+    console.log("Password validation triggered");
+    setError("Please enter your password.");
+    return;
+}
+
+    setLoading(true);
+
+    try {
+        const response = await api.post("/auth/login", {
+    email,
+    password,
+});
+
+console.log(response.data);
+setSuccess("Login successful!");
+
+    } catch (err: any) {
+        if (err.response?.data?.detail) {
+            setError(err.response.data.detail);
+        } else {
+            setError("Unable to connect to server.");
+        }
+    } finally {
+        setLoading(false);
+    }
 };
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-6">
@@ -99,14 +127,26 @@ export default function LoginPage() {
             </button>
 
           </div>
+          {success && (
+  <div className="rounded-lg bg-green-500/20 border border-green-500 text-green-300 px-4 py-3">
+    {success}
+  </div>
+)}
+
+{error && (
+  <div className="rounded-lg bg-red-500/20 border border-red-500 text-red-300 px-4 py-3">
+    {error}
+  </div>
+)}
 
           {/* Login Button */}
           <button
   type="submit"
-  className="w-full rounded-xl bg-blue-600 py-3 font-semibold transition-all duration-200 hover:bg-blue-700 hover:scale-[1.02] active:scale-95"
+  disabled={loading}
+  className="w-full rounded-xl bg-blue-600 py-3 font-semibold transition-all duration-200 hover:bg-blue-700 hover:scale-[1.02] active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
 >
-            Login
-          </button>
+  {loading ? "Logging in..." : "Login"}
+</button>
 
         </form>
 
