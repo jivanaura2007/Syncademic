@@ -1,3 +1,5 @@
+from app.database import Base, engine
+from app.models import User
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.auth import router as auth_router
@@ -5,6 +7,8 @@ app = FastAPI(
     title="Syncademic API",
     version="1.0.0"
 )
+Base.metadata.create_all(bind=engine)
+print(Base.metadata.tables.keys())
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
