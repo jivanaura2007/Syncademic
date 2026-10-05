@@ -1,0 +1,8 @@
+{
+  "name": "Remix Syncademic",
+  "description": "A polished, practical academic workspace for college students to manage attendance, timetable, smart notes, bunk planning, and semester schedules.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
